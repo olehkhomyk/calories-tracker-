@@ -1,7 +1,11 @@
+use axum::extract::State;
 use axum::Json;
+use crate::app_state::AppState;
 use crate::modules::users::user_dto::User;
 
-pub async fn get_users() -> Json<Vec<User>> {
+pub async fn get_users(State(state): State<AppState>) -> Json<Vec<User>> {
+	println!("{:#?}", state);
+	
 	let users = vec![
 		User {
 			id: 1,
