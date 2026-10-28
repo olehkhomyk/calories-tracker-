@@ -1,6 +1,6 @@
 use std::sync::Arc;
-use crate::model::entity::user::User;
-use crate::repositories::user_repository::UserRepository;
+use crate::features::users::model::User;
+use crate::features::users::repository::UserRepository;
 
 pub struct UserService {
 	repository:  Arc<dyn UserRepository>,
