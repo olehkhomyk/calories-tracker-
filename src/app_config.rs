@@ -13,7 +13,7 @@ impl AppConfig {
 
 		config::Config::builder()
 			.add_source(
-				config::Environment::with_prefix("APP")
+				config::Environment::default()
 			)
 			.build()?
 			.try_deserialize()

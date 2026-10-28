@@ -1,10 +1,15 @@
 mod app;
-mod modules;
 mod app_config;
 mod database;
 mod app_state;
+mod common;
+mod infrastructure;
+mod model;
+mod repositories;
+mod services;
 
 use app_config::AppConfig;
+
 use crate::app_state::AppState;
 
 #[tokio::main]
@@ -16,8 +21,13 @@ async fn main() {
 		.await
 		.expect("Failed to connect to PostgreSQL");
 
+	sqlx::migrate!("./migrations")
+		.run(&database_pool)
+		.await
+		.expect("Failed to run database migrations");
+
 	let state = AppState {
-		database_pool,
+		pool: database_pool,
 	};
 
 	let app = app::router()
