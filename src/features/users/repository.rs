@@ -80,10 +80,23 @@ impl UserRepository for PostgresUserRepository {
     async fn update(&self, id: i64, user: UpdateUserDto) -> Result<Option<User>, sqlx::Error> {
         let result = sqlx::query_as!(
             User,
-            "UPDATE users SET first_name = $1, updated = NOW() WHERE id = $2
+            "UPDATE users SET
+                email = COALESCE($1, email),
+                first_name = COALESCE($2, first_name),
+                last_name = COALESCE($3, last_name),
+                date_of_birth = COALESCE($4, date_of_birth),
+                height = COALESCE($5, height),
+                weight = COALESCE($6, weight),
+                updated = NOW()
+             WHERE id = $7
              RETURNING id, email, first_name, last_name, date_of_birth,
              height, weight, created, updated",
+            user.email,
             user.first_name,
+            user.last_name,
+            user.date_of_birth,
+            user.height,
+            user.weight,
             id
         )
         .fetch_optional(&self.pool)
