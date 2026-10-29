@@ -1,9 +1,9 @@
 mod app;
 mod config;
 mod db;
-mod error;
 mod features;
 mod state;
+mod shared;
 
 use crate::config::AppConfig;
 use crate::state::AppState;
