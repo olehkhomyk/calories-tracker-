@@ -1,4 +1,5 @@
 use std::sync::Arc;
+use crate::features::users::dto::CreateUserDto;
 use crate::features::users::model::User;
 use crate::features::users::repository::UserRepository;
 
@@ -12,9 +13,15 @@ impl UserService {
 	}
 
 	pub async fn get_users(&self) -> Result<Vec<User>, sqlx::Error> {
-		let users = self.repository.find_all().await?;
+		let records = self.repository.find_all().await?;
 
-		Ok(users)
+		Ok(records)
 	}
+
+    pub async fn create_user(&self, user_payload: CreateUserDto) -> Result<User, sqlx::Error> {
+        let record = self.repository.create(user_payload).await?;
+
+        Ok(record)
+    }
 }
 
