@@ -30,28 +30,6 @@ impl PostgresUserRepository {
 
 #[async_trait]
 impl UserRepository for PostgresUserRepository {
-    async fn find_by_id(&self, id: i64) -> Result<Option<User>, sqlx::Error> {
-        let result = sqlx::query_as!(
-            User,
-            "SELECT id, email, first_name, last_name, date_of_birth, height, weight, created, updated
-             FROM users WHERE id = $1", id)
-            .fetch_optional(&self.pool)
-            .await?;
-
-        Ok(result)
-    }
-
-    async fn find_by_email(&self, email: &str) -> Result<Option<User>, sqlx::Error> {
-        let result = sqlx::query_as!(
-            User,
-            "SELECT id, email, first_name, last_name, date_of_birth, height, weight, created, updated
-             FROM users WHERE email = $1", email)
-            .fetch_optional(&self.pool)
-            .await?;
-
-        Ok(result)
-    }
-
     async fn find_all(&self) -> Result<Vec<User>, sqlx::Error> {
         let result = sqlx::query_as!(
 				User,
@@ -63,6 +41,28 @@ impl UserRepository for PostgresUserRepository {
 
         Ok(result)
     }
+
+	async fn find_by_id(&self, id: i64) -> Result<Option<User>, sqlx::Error> {
+		let result = sqlx::query_as!(
+            User,
+            "SELECT id, email, first_name, last_name, date_of_birth, height, weight, created, updated
+             FROM users WHERE id = $1", id)
+			.fetch_optional(&self.pool)
+			.await?;
+
+		Ok(result)
+	}
+
+	async fn find_by_email(&self, email: &str) -> Result<Option<User>, sqlx::Error> {
+		let result = sqlx::query_as!(
+            User,
+            "SELECT id, email, first_name, last_name, date_of_birth, height, weight, created, updated
+             FROM users WHERE email = $1", email)
+			.fetch_optional(&self.pool)
+			.await?;
+
+		Ok(result)
+	}
 
     async fn create(&self, user: CreateUserDto) -> Result<User, sqlx::Error> {
         let result = sqlx::query_as!(

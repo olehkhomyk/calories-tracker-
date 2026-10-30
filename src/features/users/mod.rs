@@ -4,13 +4,14 @@ pub mod repository;
 pub mod service;
 pub mod handlers;
 
+use crate::state::AppState;
 use axum::Router;
 use axum::routing::{get, post, put};
-use crate::state::AppState;
 
 pub fn router() -> Router<AppState> {
 	Router::new()
-		.route("/", get(handlers::list_users))
+		.route("/", get(handlers::get_al_users))
+		.route("/{id}", get(handlers::get_user_by_id))
 		.route("/", post(handlers::create_user))
 		.route("/{id}", put(handlers::update_user))
 }

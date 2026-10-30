@@ -1,7 +1,7 @@
-use std::sync::Arc;
 use crate::features::users::dto::{CreateUserDto, UpdateUserDto};
 use crate::features::users::model::User;
 use crate::features::users::repository::UserRepository;
+use std::sync::Arc;
 
 pub struct UserService {
 	repository:  Arc<dyn UserRepository>,
@@ -16,6 +16,12 @@ impl UserService {
 		let records = self.repository.find_all().await?;
 
 		Ok(records)
+	}
+
+	pub async fn get_by_user_by_id(&self, user_id: i64) -> Result<Option<User>, sqlx::Error> {
+		let record = self.repository.find_by_id(user_id).await?;
+
+		Ok(record)
 	}
 
     pub async fn create_user(&self, user_payload: CreateUserDto) -> Result<User, sqlx::Error> {
