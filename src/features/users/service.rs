@@ -1,6 +1,7 @@
 use crate::features::users::dto::{CreateUserDto, UpdateUserDto};
 use crate::features::users::model::User;
 use crate::features::users::repository::UserRepository;
+use crate::shared::error::AppError;
 use std::sync::Arc;
 
 pub struct UserService {
@@ -12,26 +13,32 @@ impl UserService {
 		Self { repository }
 	}
 
-	pub async fn get_users(&self) -> Result<Vec<User>, sqlx::Error> {
-		let records = self.repository.find_all().await?;
+	pub async fn get_users(&self) -> Result<Vec<User>, AppError> {
+		let records = self.repository.find_all()
+			.await?;
 
 		Ok(records)
 	}
 
-	pub async fn get_by_user_by_id(&self, user_id: i64) -> Result<Option<User>, sqlx::Error> {
-		let record = self.repository.find_by_id(user_id).await?;
+	pub async fn get_by_user_by_id(&self, user_id: i64) -> Result<User, AppError> {
+		let record = self.repository.find_by_id(user_id)
+			.await?
+			.ok_or(AppError::NotFound("User not found".to_string()))?;
 
 		Ok(record)
 	}
 
-    pub async fn create_user(&self, user_payload: CreateUserDto) -> Result<User, sqlx::Error> {
-        let record = self.repository.create(user_payload).await?;
+	pub async fn create_user(&self, user_payload: CreateUserDto) -> Result<User, AppError> {
+		let record = self.repository.create(user_payload)
+			.await?;
 
         Ok(record)
     }
 
-    pub async fn update_user(&self, id: i64, user_payload: UpdateUserDto) -> Result<Option<User>, sqlx::Error> {
-        let record = self.repository.update(id, user_payload).await?;
+	pub async fn update_user(&self, id: i64, user_payload: UpdateUserDto) -> Result<User, AppError> {
+		let record = self.repository.update(id, user_payload)
+			.await?
+			.ok_or(AppError::NotFound("User not found".to_string()))?;
 
         Ok(record)
     }

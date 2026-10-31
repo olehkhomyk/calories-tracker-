@@ -1,41 +1,46 @@
 use crate::features::users::dto::{CreateUserDto, UpdateUserDto};
 use crate::features::users::model::User;
 use crate::features::users::service::UserService;
+use crate::shared::error::AppError;
 use axum::Json;
+use axum::extract::rejection::JsonRejection;
 use axum::extract::{Path, State};
 use std::sync::Arc;
 
-pub async fn get_al_users(State(user_service): State<Arc<UserService>>) -> Json<Vec<User>> {
-	let users = user_service.get_users().await.unwrap(); // Only for now later change handle errors and throw.
+pub async fn get_al_users(
+	State(user_service): State<Arc<UserService>>
+) -> Result<Json<Vec<User>>, AppError> {
+	let users = user_service.get_users().await?;
 
-	Json(users)
+	Ok(Json(users))
 }
 
 pub async fn create_user(
     State(user_service): State<Arc<UserService>>,
-    Json(payload): Json<CreateUserDto>,
-) -> Json<User> {
-	let users = user_service.create_user(payload).await.unwrap(); // Only for now later change handle errors and throw.
+    payload: Result<Json<CreateUserDto>, JsonRejection>
+) -> Result<Json<User>, AppError> {
+	let Json(dto) = payload?;
+	let users = user_service.create_user(dto).await?;
 
-	Json(users)
+	Ok(Json(users))
 }
 
 pub async fn update_user(
     State(user_service): State<Arc<UserService>>,
     Path(id): Path<i64>,
-    Json(payload): Json<UpdateUserDto>,
-) -> Json<User> {
-	let user = user_service.update_user(id, payload).await.unwrap().unwrap();  // Only for now later change handle errors and throw.
+    payload: Result<Json<UpdateUserDto>, JsonRejection>
+) -> Result<Json<User>, AppError> {
+	let Json(dto) = payload?;
+	let user = user_service.update_user(id, dto).await?;
 
-    Json(user)
+	Ok(Json(user))
 }
-
 
 pub async fn get_user_by_id(
 	State(user_service): State<Arc<UserService>>,
 	Path(id): Path<i64>,
-) -> Json<User> {
-	let user = user_service.get_by_user_by_id(id).await.unwrap().unwrap(); // Only for now later change handle errors and throw.
+) -> Result<Json<User>, AppError> {
+	let user = user_service.get_by_user_by_id(id).await?;
 
-	Json(user)
+	Ok(Json(user))
 }
