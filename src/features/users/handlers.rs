@@ -5,6 +5,7 @@ use crate::shared::error::AppError;
 use axum::Json;
 use axum::extract::rejection::JsonRejection;
 use axum::extract::{Path, State};
+use axum_valid::{Valid, ValidRejection};
 use std::sync::Arc;
 
 pub async fn get_al_users(
@@ -17,9 +18,13 @@ pub async fn get_al_users(
 
 pub async fn create_user(
     State(user_service): State<Arc<UserService>>,
-    payload: Result<Json<CreateUserDto>, JsonRejection>
+    payload: Result<
+	    Valid<Json<CreateUserDto>>,
+	    ValidRejection<JsonRejection>
+    >
 ) -> Result<Json<User>, AppError> {
-	let Json(dto) = payload?;
+	let Valid(Json(dto)) = payload?;
+
 	let users = user_service.create_user(dto).await?;
 
 	Ok(Json(users))
@@ -28,9 +33,13 @@ pub async fn create_user(
 pub async fn update_user(
     State(user_service): State<Arc<UserService>>,
     Path(id): Path<i64>,
-    payload: Result<Json<UpdateUserDto>, JsonRejection>
+    payload: Result<
+	    Valid<Json<UpdateUserDto>>,
+	    ValidRejection<JsonRejection>
+    >
 ) -> Result<Json<User>, AppError> {
-	let Json(dto) = payload?;
+	let Valid(Json(dto)) = payload?;
+
 	let user = user_service.update_user(id, dto).await?;
 
 	Ok(Json(user))
