@@ -9,6 +9,7 @@ use validator::ValidationErrors;
 pub enum AppError {
 	NotFound(String),
     BadRequest(String),
+	UnAuthorized(String),
     Database(sqlx::Error),
 	InvalidJson(JsonRejection),
 	Validation(ValidationErrors),
@@ -66,6 +67,11 @@ impl IntoResponse for AppError {
 		    AppError::BadRequest(message) => (
 			    StatusCode::BAD_REQUEST,
 			    "BAD_REQUEST",
+			    message,
+		    ),
+		    AppError::UnAuthorized(message) => (
+			    StatusCode::UNAUTHORIZED,
+			    "UNAUTHORIZED",
 			    message,
 		    ),
 		    // TODO check and learn syntax "errors.iter().map(move | ..."

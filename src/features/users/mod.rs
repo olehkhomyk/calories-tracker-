@@ -4,9 +4,10 @@ pub mod repository;
 pub mod service;
 pub mod handlers;
 
+use crate::shared::middleware::auth::auth_guard;
 use crate::state::AppState;
-use axum::Router;
 use axum::routing::{get, post, put};
+use axum::{Router, middleware};
 
 pub fn router() -> Router<AppState> {
 	Router::new()
@@ -14,4 +15,5 @@ pub fn router() -> Router<AppState> {
 		.route("/{id}", get(handlers::get_user_by_id))
 		.route("/", post(handlers::create_user))
 		.route("/{id}", put(handlers::update_user))
+		.layer(middleware::from_fn(auth_guard))
 }

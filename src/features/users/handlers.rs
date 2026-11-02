@@ -24,7 +24,6 @@ pub async fn create_user(
     >
 ) -> Result<Json<User>, AppError> {
 	let Valid(Json(dto)) = payload?;
-
 	let users = user_service.create_user(dto).await?;
 
 	Ok(Json(users))
@@ -39,7 +38,6 @@ pub async fn update_user(
     >
 ) -> Result<Json<User>, AppError> {
 	let Valid(Json(dto)) = payload?;
-
 	let user = user_service.update_user(id, dto).await?;
 
 	Ok(Json(user))
