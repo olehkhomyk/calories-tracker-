@@ -11,6 +11,7 @@ pub enum AppError {
     BadRequest(String),
 	UnAuthorized(String),
     Database(sqlx::Error),
+    InternalServer(String),
 	InvalidJson(JsonRejection),
 	Validation(ValidationErrors),
 }
@@ -97,6 +98,15 @@ impl IntoResponse for AppError {
 				    "Validation failed".to_string(),
 			    )
 		    },
+            AppError::InternalServer(error) => {
+                eprintln!("Database error: {error}");
+
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    "INTERNAL_ERROR",
+                    "Internal server error".to_string(),
+                )
+            },
 		    AppError::InvalidJson(error) => (
 			    error.status(),
 			    "INVALID_REQUEST_BODY",

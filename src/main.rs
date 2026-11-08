@@ -22,12 +22,12 @@ async fn main() {
 		.await
 		.expect("Failed to run database migrations");
 
-	let state = AppState::new(database_pool);
+    let address = format!("{}:{}", config.server_host, config.server_port);
 
-	let app = app::router()
-		.with_state(state);
+    let state = AppState::new(config, database_pool);
 
-	let address = format!("{}:{}", config.server_host, config.server_port);
+    let app = app::router(state.clone())
+        .with_state(state);
 
 	let listener = tokio::net::TcpListener::bind(&address)
 		.await
