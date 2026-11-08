@@ -26,6 +26,7 @@ pub struct UpdateUserDto {
 	#[validate(email, length(max = 50))]
 	pub email: Option<String>,
 	#[validate(length(min = 8, max = 72))]
+    // todo auth: remove password from update, reset password should be different functionality
 	pub password: Option<String>,
 	#[validate(length(min = 2, max = 30))]
 	pub first_name: Option<String>,

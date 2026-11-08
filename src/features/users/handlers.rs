@@ -11,9 +11,9 @@ use std::sync::Arc;
 pub async fn get_al_users(
 	State(user_service): State<Arc<UserService>>
 ) -> Result<Json<Vec<User>>, AppError> {
-	let users = user_service.get_users().await?;
+    let user = user_service.get_users().await?;
 
-	Ok(Json(users))
+    Ok(Json(user))
 }
 
 pub async fn create_user(

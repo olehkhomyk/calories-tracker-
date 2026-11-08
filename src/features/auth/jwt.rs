@@ -1,4 +1,4 @@
-use crate::features::auth::model::Claims;
+use crate::features::auth::dto::Claims;
 use jsonwebtoken::{Algorithm, DecodingKey, EncodingKey, Header, Validation, decode, encode};
 
 pub fn create_token(

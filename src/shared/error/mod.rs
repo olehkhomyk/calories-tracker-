@@ -99,6 +99,7 @@ impl IntoResponse for AppError {
 			    )
 		    },
             AppError::InternalServer(error) => {
+                // TODO Remove from here put into logger.
                 eprintln!("Database error: {error}");
 
                 (
@@ -113,6 +114,7 @@ impl IntoResponse for AppError {
 			    error.body_text(),
 		    ),
 		    AppError::Database(error) => {
+                // TODO Remove from here put into logger.
 			    eprintln!("Database error: {error}");
 
 			    (
