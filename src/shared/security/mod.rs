@@ -1,5 +1,5 @@
 use crate::shared::error::AppError;
-use bcrypt::{BcryptError, DEFAULT_COST, hash, verify};
+use bcrypt::{DEFAULT_COST, hash, verify};
 
 pub async fn hash_password(password: String) -> Result<String, AppError> {
     tokio::task::spawn_blocking(move || hash(password, DEFAULT_COST))
@@ -8,9 +8,9 @@ pub async fn hash_password(password: String) -> Result<String, AppError> {
         .map_err(|e| AppError::InternalServer(format!("bcrypt error: {e}")))
 }
 
-pub fn verify_password(password: &str, hashed_password: &str) -> Result<bool, BcryptError> {
-    let is_valid = verify(password, hashed_password)?;
-    // .map_err(|e| AppError::InternalServer(format!("bcrypt error: {:?}", e)))?;
-
-    Ok(is_valid)
+pub async fn verify_password(password: String, hashed_password: String) -> Result<bool, AppError> {
+    tokio::task::spawn_blocking(move || verify(password, &hashed_password))
+        .await
+        .map_err(|e| AppError::InternalServer(format!("verify task failed: {e}")))?
+        .map_err(|e| AppError::InternalServer(format!("bcrypt error: {e}")))
 }

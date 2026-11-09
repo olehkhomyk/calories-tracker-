@@ -13,6 +13,6 @@ pub struct AuthResponse {
 
 #[derive(Deserialize)]
 pub struct LoginDto {
-    email: String,
-    password: String,
+    pub email: String,
+    pub password: String,
 }
