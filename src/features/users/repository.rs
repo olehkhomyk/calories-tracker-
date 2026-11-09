@@ -11,9 +11,9 @@ pub trait UserRepository: Send + Sync {
 
     async fn find_all(&self) -> Result<Vec<User>, sqlx::Error>;
 
-    async fn create(&self, user: CreateUserDto) -> Result<User, sqlx::Error>;
+    async fn create(&self, user: &CreateUserDto) -> Result<User, sqlx::Error>;
 
-    async fn update(&self, id: i64, user: UpdateUserDto) -> Result<Option<User>, sqlx::Error>;
+    async fn update(&self, id: i64, user: &UpdateUserDto) -> Result<Option<User>, sqlx::Error>;
 
     async fn delete(&self, id: i64) -> Result<(), sqlx::Error>;
 }
@@ -64,7 +64,7 @@ impl UserRepository for PostgresUserRepository {
 		Ok(result)
 	}
 
-    async fn create(&self, user: CreateUserDto) -> Result<User, sqlx::Error> {
+    async fn create(&self, user: &CreateUserDto) -> Result<User, sqlx::Error> {
         let result = sqlx::query_as!(
             User,
             "INSERT INTO users (email, password_hash, first_name, last_name, date_of_birth, height, weight)
@@ -77,7 +77,7 @@ impl UserRepository for PostgresUserRepository {
         Ok(result)
     }
 
-    async fn update(&self, id: i64, user: UpdateUserDto) -> Result<Option<User>, sqlx::Error> {
+    async fn update(&self, id: i64, user: &UpdateUserDto) -> Result<Option<User>, sqlx::Error> {
         let result = sqlx::query_as!(
             User,
             "UPDATE users SET

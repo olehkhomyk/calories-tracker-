@@ -30,12 +30,34 @@ impl UserService {
         Ok(record)
     }
 
+    pub async fn get_by_user_by_email(&self, email: &str) -> Result<User, AppError> {
+        let record = self
+            .repository
+            .find_by_email(email)
+            .await?
+            .ok_or(AppError::NotFound("User not found".to_string()))?;
+
+        Ok(record)
+    }
+
     pub async fn create_user(&self, mut user_payload: CreateUserDto) -> Result<User, AppError> {
         user_payload.password = hash_password(user_payload.password).await?;
 
-        let record = self.repository.create(user_payload).await?;
+        let user_record = self
+            .repository
+            .create(&user_payload)
+            .await
+            .map_err(|err| match err {
+                sqlx::Error::Database(db_err) if db_err.is_unique_violation() => {
+                    AppError::Conflict(format!(
+                        "User with email {} already exists",
+                        &user_payload.email
+                    ))
+                }
+                other => other.into(),
+            })?;
 
-        Ok(record)
+        Ok(user_record)
     }
 
     pub async fn update_user(
@@ -45,7 +67,7 @@ impl UserService {
     ) -> Result<User, AppError> {
         let record = self
             .repository
-            .update(id, user_payload)
+            .update(id, &user_payload)
             .await?
             .ok_or(AppError::NotFound("User not found".to_string()))?;
 

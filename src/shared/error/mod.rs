@@ -14,6 +14,7 @@ pub enum AppError {
     InternalServer(String),
 	InvalidJson(JsonRejection),
 	Validation(ValidationErrors),
+	Conflict(String),
 }
 
 #[derive(Serialize)]
@@ -39,7 +40,14 @@ struct FieldError {
 // Lets `?` turn a `sqlx::Error` into an `AppError` automatically
 impl From<sqlx::Error> for AppError {
     fn from(error: sqlx::Error) -> Self {
-        AppError::Database(error)
+        match error {
+            sqlx::Error::Database(db_err) if db_err.is_unique_violation() => {
+                println!("Database error occurred during sqlx query: {:?}", db_err);
+
+                AppError::Conflict("Resource already exists".to_string())
+            },
+            other => AppError::Database(other),
+        }
     }
 }
 
@@ -50,7 +58,6 @@ impl From<ValidRejection<JsonRejection>> for AppError {
 			ValidRejection::Inner(error) => Self::InvalidJson(error),
 			ValidRejection::Valid(errors) => Self::Validation(errors)
 		}
-
 	}
 }
 
@@ -123,6 +130,11 @@ impl IntoResponse for AppError {
 				    "Internal server error".to_string(),
 			    )
 		    }
+		    AppError::Conflict(error) => (
+                StatusCode::CONFLICT,
+                "CONFLICT_ERROR",
+                error,
+            )
         };
 
 	    (

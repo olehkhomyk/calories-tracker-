@@ -10,3 +10,9 @@ pub struct Claims {
 pub struct AuthResponse {
     pub access_token: String,
 }
+
+#[derive(Deserialize)]
+pub struct LoginDto {
+    email: String,
+    password: String,
+}
