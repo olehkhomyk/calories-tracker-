@@ -7,6 +7,7 @@ pub struct User {
 	pub email: String,
 	pub first_name: String,
 	pub last_name: String,
+    pub password_hash: String,
 	pub date_of_birth: Option<NaiveDate>,
 	pub height: Option<f64>,
 	pub weight: Option<f64>,

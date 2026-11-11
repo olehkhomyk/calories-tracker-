@@ -8,7 +8,10 @@ pub async fn hash_password(password: String) -> Result<String, AppError> {
         .map_err(|e| AppError::InternalServer(format!("bcrypt error: {e}")))
 }
 
-pub async fn verify_password(password: String, hashed_password: String) -> Result<bool, AppError> {
+pub async fn verify_password(password: &str, hashed_password: &str) -> Result<bool, AppError> {
+    let password = password.to_owned();
+    let hashed_password = hashed_password.to_owned();
+
     tokio::task::spawn_blocking(move || verify(password, &hashed_password))
         .await
         .map_err(|e| AppError::InternalServer(format!("verify task failed: {e}")))?

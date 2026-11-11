@@ -1,10 +1,11 @@
-use chrono::NaiveDate;
-use serde::Deserialize;
+use crate::features::users::entity::User;
+use chrono::{NaiveDate, NaiveDateTime};
+use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 // Max lengths match the column sizes in migrations/1_create_users.up.sql
 #[derive(Deserialize, Validate)]
-pub struct CreateUserDto {
+pub struct CreateUserRequest {
 	#[validate(email, length(max = 50))]
 	pub email: String,
 	#[validate(length(min = 8, max = 72))]
@@ -22,7 +23,7 @@ pub struct CreateUserDto {
 
 // `Option` fields are validated only when present (`Some`)
 #[derive(Deserialize, Validate)]
-pub struct UpdateUserDto {
+pub struct UpdateUserRequest {
 	#[validate(email, length(max = 50))]
 	pub email: Option<String>,
 	#[validate(length(min = 8, max = 72))]
@@ -37,4 +38,33 @@ pub struct UpdateUserDto {
 	#[validate(range(min = 20.0, max = 500.0))]
 	pub weight: Option<f64>,
 	pub date_of_birth: Option<NaiveDate>
+}
+
+#[derive(Deserialize, Serialize)]
+pub struct UserResponse {
+    pub id: i64,
+    pub email: String,
+    pub first_name: String,
+    pub last_name: String,
+    pub date_of_birth: Option<NaiveDate>,
+    pub height: Option<f64>,
+    pub weight: Option<f64>,
+    pub created: NaiveDateTime,
+    pub updated: NaiveDateTime,
+}
+
+impl From<User> for UserResponse {
+    fn from(user: User) -> Self {
+        Self {
+            id: user.id,
+            email: user.email,
+            first_name: user.first_name,
+            last_name: user.last_name,
+            date_of_birth: user.date_of_birth,
+            height: user.height,
+            weight: user.weight,
+            created: user.created,
+            updated: user.updated,
+        }
+    }
 }

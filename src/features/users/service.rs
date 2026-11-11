@@ -1,5 +1,5 @@
-use crate::features::users::dto::{CreateUserDto, UpdateUserDto};
-use crate::features::users::model::User;
+use crate::features::users::dto::{CreateUserRequest, UpdateUserRequest};
+use crate::features::users::entity::User;
 use crate::features::users::repository::UserRepository;
 use crate::shared::error::AppError;
 use crate::shared::security::hash_password;
@@ -20,7 +20,7 @@ impl UserService {
         Ok(records)
     }
 
-    pub async fn get_by_user_by_id(&self, user_id: i64) -> Result<User, AppError> {
+    pub async fn get_user_by_id(&self, user_id: i64) -> Result<User, AppError> {
         let record = self
             .repository
             .find_by_id(user_id)
@@ -30,7 +30,7 @@ impl UserService {
         Ok(record)
     }
 
-    pub async fn get_by_user_by_email(&self, email: &str) -> Result<User, AppError> {
+    pub async fn get_user_by_email(&self, email: &str) -> Result<User, AppError> {
         let record = self
             .repository
             .find_by_email(email)
@@ -40,7 +40,7 @@ impl UserService {
         Ok(record)
     }
 
-    pub async fn create_user(&self, mut user_payload: CreateUserDto) -> Result<User, AppError> {
+    pub async fn create_user(&self, mut user_payload: CreateUserRequest) -> Result<User, AppError> {
         user_payload.password = hash_password(user_payload.password).await?;
 
         let user_record = self
@@ -63,7 +63,7 @@ impl UserService {
     pub async fn update_user(
         &self,
         id: i64,
-        user_payload: UpdateUserDto,
+        user_payload: UpdateUserRequest,
     ) -> Result<User, AppError> {
         let record = self
             .repository
